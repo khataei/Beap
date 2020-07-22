@@ -1,0 +1,29 @@
+Package: Beap
+Title: Contains the functions used in the Beap lab for physical activity analysis
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "SeyedJavad",
+           family = "KhataeiPour",
+           role = c("aut", "cre"),
+           email = "s.khataeipour@mun.ca")
+Description: offers many physical activity analysis tools.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    lubridate,
+    activityCounts,
+    magrittr,
+    zoo,
+    e1071,
+    progress,
+    caret,
+    rlang,
+    dplyr,
+    doParallel,
+    tictoc,
+    parallel,
+    MLmetrics,
+    ggplot2,
+    data.table
+RoxygenNote: 6.1.1

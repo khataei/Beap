@@ -1,0 +1,26 @@
+{
+    "id": "F52A88B1",
+    "path": "~/Documents/codes/Beap/man/ApplyModels.Rd",
+    "project_path": "man/ApplyModels.Rd",
+    "type": "r_doc",
+    "hash": "579884477",
+    "contents": "",
+    "dirty": false,
+    "created": 1595427664979.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "cursorPosition": "39,1",
+        "scrollLine": "23"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1595427702,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1595427702270,
+    "read_only": true,
+    "read_only_alternatives": [
+        "R/ApplyModels.R"
+    ]
+}
