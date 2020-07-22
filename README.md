@@ -1,2 +1,2 @@
 # Beap
-Phyysical activity classification using smartphones.
+Physical activity classification using smartphones.
