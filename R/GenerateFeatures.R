@@ -1,13 +1,14 @@
 #' Generate new features from raw data for a given time window
 #'
-#' @param raw_df a dataframe which has at least three coluns, x_axis, y_axis, z_axis
+#' @param raw_df a dataframe which has at least three columns, x_axis, y_axis, z_axis
 #' @param window_size_sec windows size in second
 #' @param frequency sampling frequency
 #' @param x_axis_column column number of x axis or
 #' @param y_axis_column column number of y axis or
 #' @param z_axis_column column number of z axis or
+#' @param overlap_sec
 #'
-#' @return new_features a dataset contaning generated features
+#' @return new_features a dataset containing generated features
 #' @export
 #'
 #' @import lubridate
@@ -47,7 +48,7 @@ GenerateFeatures <-
            frequency = 30) {
     # ------------------------- Variable dictionary -------------------------- #
     # window_size_sec: windows size in second
-    # frequency: dataset frequecny
+    # frequency: dataset frequency
     # window_size: number of readings that each window contains and the features are calucated for
     # ------------------------------------------------------------------------ #
 
@@ -175,7 +176,7 @@ GenerateFeatures <-
 
 
 
-    # 5------------------- CV --------------------
+    # ------------------- CV --------------------
     # The coefficient of variation (CV)  or relative standard deviation
     # The ratio of the standard deviation to the mean.
     # The higher the coefficient of variation, the greater the level of dispersion around the mean.

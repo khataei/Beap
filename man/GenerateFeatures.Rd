@@ -4,9 +4,15 @@
 \alias{GenerateFeatures}
 \title{Generate new features from raw data for a given time window}
 \usage{
-GenerateFeatures(raw_df, x_axis_column = 1, y_axis_column = 2,
-  z_axis_column = 3, window_size_sec = 1, overlap_sec = 0,
-  frequency = 30)
+GenerateFeatures(
+  raw_df,
+  x_axis_column = 1,
+  y_axis_column = 2,
+  z_axis_column = 3,
+  window_size_sec = 1,
+  overlap_sec = 0,
+  frequency = 30
+)
 }
 \arguments{
 \item{raw_df}{a dataframe which has at least three coluns, x_axis, y_axis, z_axis}

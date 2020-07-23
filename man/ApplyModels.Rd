@@ -4,10 +4,19 @@
 \alias{ApplyModels}
 \title{Title Apply various ML models to your datasets and compare the results}
 \usage{
-ApplyModels(working_df, model_names = c("RF", "LDA", "NB", "SVM", "KNN",
-  "DT"), split_ratio = 0.66, scale_center = FALSE, cv_folds = 0,
-  shrink = 1, save_results_on_disk = TRUE, return_plots = TRUE,
-  RF_mtry = 2, min_node_size = 50, cores = 1)
+ApplyModels(
+  working_df,
+  model_names = c("RF", "LDA", "NB", "SVM", "KNN", "DT", "XGB"),
+  split_ratio = 0.66,
+  scale_center = FALSE,
+  cv_folds = 0,
+  shrink = 1,
+  save_results_on_disk = TRUE,
+  return_plots = TRUE,
+  RF_mtry = 2,
+  min_node_size = 50,
+  cores = 1
+)
 }
 \arguments{
 \item{working_df}{input dataset for classification}
