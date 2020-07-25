@@ -1,12 +1,17 @@
+
 Package: Beap
-Title: Contains the functions used in the Beap lab for physical activity analysis
-Version: 0.0.0.9000
-Authors@R: 
+Title: Physical Activity Level Prediction Feature Generator
+Version: 0.0.0.9001
+Authors@R: c(
     person(given = "SeyedJavad",
            family = "KhataeiPour",
            role = c("aut", "cre"),
-           email = "s.khataeipour@mun.ca")
-Description: offers many physical activity analysis tools.
+           email = "skhataeipour@mun.ca"),
+   person(given = "Daniel",
+           family = "Fuller",
+           role = c("aut"),
+           email = "dfuller@mun.ca"))
+Description: Creates physical activity features from raw accelerometer data.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -19,13 +24,7 @@ Imports:
     progress,
     caret,
     rlang,
-    dplyr,
-    doParallel,
-    tictoc,
-    parallel,
-    MLmetrics,
-    ggplot2,
-    data.table
+    dplyr
 RoxygenNote: 7.1.1
 Suggests: 
     testthat
