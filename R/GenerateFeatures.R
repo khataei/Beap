@@ -18,6 +18,7 @@
 #' @import e1071
 #' @import progress
 #' @importFrom rlang .data
+#' @importFrom stats cor sd setNames
 #'
 #' @examples
 #'
@@ -221,7 +222,7 @@ GenerateFeatures <-
         width = window_size,
         by = distance,
         FUN =  function(a)
-          IQR(a, na.rm = T)
+          stats::IQR(a, na.rm = T)
       ) %>%
       as.data.frame() %>%
       rename("iqr_x" = x_axis,
@@ -244,7 +245,7 @@ GenerateFeatures <-
         width = window_size,
         by = distance,
         FUN = function(x)
-          cor(x[, 1], x[, 2]),
+          stats::cor(x[, 1], x[, 2]),
         by.column = FALSE # If TRUE, FUN is applied to each column separately
       ) %>%
       as.data.frame() %>%
@@ -258,7 +259,7 @@ GenerateFeatures <-
         width = window_size,
         by = distance,
         FUN = function(x)
-          cor(x[, 1], x[, 2]),
+          stats::cor(x[, 1], x[, 2]),
         by.column = FALSE # If TRUE, FUN is applied to each column separately
       ) %>%
       as.data.frame() %>%
@@ -294,11 +295,11 @@ GenerateFeatures <-
         width = window_size,
         by = distance,
         FUN = function(x)
-          acf(
+          stats::acf(
             x,
             lag.max = 1,
             plot = F,
-            na.action = na.pass
+            na.action = stats::na.pass
           )[["acf"]][2]
       ) %>%
       as.data.frame() %>%
@@ -419,7 +420,7 @@ GenerateFeatures <-
         width = window_size,
         by = distance,
         FUN = function(x) {
-          x_centralized <- x - median(x = x, na.rm = T)
+          x_centralized <- x - stats::median(x = x, na.rm = T)
           zcr <- 0
           for (i in 1:(window_size - 1)) {
             if (!is.na(x_centralized[i] * x_centralized[i + 1])) {
@@ -451,7 +452,7 @@ GenerateFeatures <-
         width = window_size,
         by = distance,
         FUN = function(x) {
-          FT <- fft(x)
+          FT <- stats::fft(x)
           return(max(Re(FT ^ 2)))
         }
       ) %>%
@@ -474,7 +475,7 @@ GenerateFeatures <-
         width = window_size,
         by = distance,
         FUN = function(x) {
-          FT <- fft(x)
+          FT <- stats::fft(x)
           idx <- which.max(Re(FT ^ 2))
           return(Re(FT[idx]))
         }
@@ -561,7 +562,7 @@ GenerateFeatures <-
 
 
     # 4.
-    new_features$ntile <- ntile(new_features$vec_mag, 5)
+    new_features$ntile <- dplyer::ntile(new_features$vec_mag, 5)
 
 
 

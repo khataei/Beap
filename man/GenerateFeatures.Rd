@@ -15,7 +15,7 @@ GenerateFeatures(
 )
 }
 \arguments{
-\item{raw_df}{a dataframe which has at least three coluns, x_axis, y_axis, z_axis}
+\item{raw_df}{a dataframe which has at least three columns, x_axis, y_axis, z_axis}
 
 \item{x_axis_column}{column number of x axis or}
 
@@ -25,10 +25,12 @@ GenerateFeatures(
 
 \item{window_size_sec}{windows size in second}
 
+\item{overlap_sec}{}
+
 \item{frequency}{sampling frequency}
 }
 \value{
-new_features a dataset contaning generated features
+new_features a dataset containing generated features
 }
 \description{
 Generate new features from raw data for a given time window
