@@ -1,12 +1,12 @@
 #' Generate new features from raw data for a given time window
 #'
-#' @param raw_df a dataframe which has at least three columns, x_axis, y_axis, z_axis
+#' @param raw_df a dataframe which has at least three columns, 'x_axis', 'y_axis', 'z_axis'
 #' @param window_size_sec windows size in second
 #' @param frequency sampling frequency
 #' @param x_axis_column column number of x axis or
 #' @param y_axis_column column number of y axis or
 #' @param z_axis_column column number of z axis or
-#' @param overlap_sec
+#' @param overlap_sec overlap of periods in seconds
 #'
 #' @return new_features a dataset containing generated features
 #' @export
@@ -19,6 +19,7 @@
 #' @import progress
 #' @importFrom rlang .data
 #' @importFrom stats cor sd setNames
+#' @import dplyr
 #'
 #' @examples
 #'
@@ -41,9 +42,9 @@
 #'
 GenerateFeatures <-
   function(raw_df,
-           x_axis_column = 1,
-           y_axis_column = 2,
-           z_axis_column = 3,
+           x_axis_column = 2,
+           y_axis_column = 3,
+           z_axis_column = 4,
            window_size_sec = 1,
            overlap_sec = 0,
            frequency = 30) {
@@ -78,7 +79,7 @@ GenerateFeatures <-
     pb$message(" --- Generating New Features ---")
     pb$tick(0)
 
-    # The following functions work on the x_axis, y_axis, z_axis columns
+    # The following functions work on the 'x_axis', 'y_axis', 'z_axis' columns
     raw_df  %<>% dplyr::select(c(x_axis_column, y_axis_column, z_axis_column))
     colnames(raw_df) <- c("x_axis", "y_axis", "z_axis")
     message(
@@ -97,7 +98,7 @@ GenerateFeatures <-
 
     # 1----------------- Sum ----------------- #
     sum_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -105,11 +106,11 @@ GenerateFeatures <-
         FUN = sum
       ) %>%
       as.data.frame() %>%
-      rename("sum_x" = x_axis,
-             "sum_y" = y_axis,
-             "sum_z" = z_axis)
+      rename("sum_x" = 'x_axis',
+             "sum_y" = 'y_axis',
+             "sum_z" = 'z_axis')
 
-    new_features %<>% bind_cols(sum_features)
+    new_features %<>% dplyr::bind_cols(sum_features)
     pb$tick()
     pb$message("Sum features are created")
 
@@ -118,7 +119,7 @@ GenerateFeatures <-
     # 2----------------- Signal Power ----------------- #
     # instantaneous power
     snp_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -127,11 +128,11 @@ GenerateFeatures <-
           sum(x ^ 2)
       ) %>%
       as.data.frame() %>%
-      rename("snp_x" = x_axis,
-             "snp_y" = y_axis,
-             "snp_z" = z_axis)
+      rename("snp_x" = 'x_axis',
+             "snp_y" = 'y_axis',
+             "snp_z" = 'z_axis')
 
-    new_features %<>% bind_cols(snp_features)
+    new_features %<>% dplyr::bind_cols(snp_features)
     pb$tick()
     pb$message("power features are created")
 
@@ -139,7 +140,7 @@ GenerateFeatures <-
 
     # 3----------------- Mean -----------------
     mean_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -147,11 +148,11 @@ GenerateFeatures <-
         FUN = mean
       ) %>%
       as.data.frame() %>%
-      rename("mean_x" = x_axis,
-             "mean_y" = y_axis,
-             "mean_z" = z_axis)
+      rename("mean_x" = 'x_axis',
+             "mean_y" = 'y_axis',
+             "mean_z" = 'z_axis')
 
-    new_features %<>% bind_cols(mean_features)
+    new_features %<>% dplyr::bind_cols(mean_features)
     pb$tick()
     pb$message("Mean features are created")
 
@@ -159,7 +160,7 @@ GenerateFeatures <-
 
     # 4--------------- Standard deviation-------------
     sd_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -167,11 +168,11 @@ GenerateFeatures <-
         FUN = sd
       ) %>%
       as.data.frame() %>%
-      rename("sd_x" = x_axis,
-             "sd_y" = y_axis,
-             "sd_z" = z_axis)
+      rename("sd_x" = 'x_axis',
+             "sd_y" = 'y_axis',
+             "sd_z" = 'z_axis')
 
-    new_features %<>% bind_cols(sd_features)
+    new_features %<>% dplyr::bind_cols(sd_features)
     pb$tick()
     pb$message("Standard deviation features are created")
 
@@ -182,11 +183,11 @@ GenerateFeatures <-
     # The ratio of the standard deviation to the mean.
     # The higher the coefficient of variation, the greater the level of dispersion around the mean.
     cv_feature <- sd_features / mean_features
-    cv_feature %<>% rename("cv_x" = sd_x,
-                           "cv_y" = sd_y,
-                           "cv_z" = sd_z)
+    cv_feature %<>% rename("cv_x" = 'sd_x',
+                           "cv_y" = 'sd_y',
+                           "cv_z" = 'sd_z')
 
-    new_features %<>% bind_cols(cv_feature)
+    new_features %<>% dplyr::bind_cols(cv_feature)
     pb$tick()
     pb$message("Coefficient of variation features are created")
 
@@ -195,7 +196,7 @@ GenerateFeatures <-
     # 6----------------- Peak-to-peak amplitude--------------
     # Peak amplitude is the maximum value minus minimum value of signal at each window
     amp_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -204,11 +205,11 @@ GenerateFeatures <-
           max(a) - min(a)
       ) %>%
       as.data.frame() %>%
-      rename("amp_x" = x_axis,
-             "amp_y" = y_axis,
-             "amp_z" = z_axis)
+      rename("amp_x" = 'x_axis',
+             "amp_y" = 'y_axis',
+             "amp_z" = 'z_axis')
 
-    new_features %<>% bind_cols(amp_features)
+    new_features %<>% dplyr::bind_cols(amp_features)
     pb$tick()
     pb$message("Peak-to-peak amplitude features are created")
 
@@ -216,7 +217,7 @@ GenerateFeatures <-
 
     # 7----------------- IQR --------------
     iqr_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -225,11 +226,11 @@ GenerateFeatures <-
           stats::IQR(a, na.rm = T)
       ) %>%
       as.data.frame() %>%
-      rename("iqr_x" = x_axis,
-             "iqr_y" = y_axis,
-             "iqr_z" = z_axis)
+      rename("iqr_x" = 'x_axis',
+             "iqr_y" = 'y_axis',
+             "iqr_z" = 'z_axis')
 
-    new_features %<>% bind_cols(iqr_features)
+    new_features %<>% dplyr::bind_cols(iqr_features)
     pb$tick()
     pb$message("IQR features are created")
 
@@ -239,7 +240,7 @@ GenerateFeatures <-
 
     # Between x and y
     cor_xy_feature <- raw_df %>%
-      select(x_axis, y_axis) %>%
+      dplyr::select('x_axis', 'y_axis') %>%
       rollapply(
         data = .,
         width = window_size,
@@ -253,7 +254,7 @@ GenerateFeatures <-
 
     # Between x and z
     cor_xz_feature <- raw_df %>%
-      select(x_axis, z_axis) %>%
+      dplyr::select('x_axis', 'z_axis') %>%
       rollapply(
         data = .,
         width = window_size,
@@ -267,7 +268,7 @@ GenerateFeatures <-
 
     # Between y and z
     cor_yz_feature <- raw_df %>%
-      select(y_axis, z_axis) %>%
+      dplyr::select('y_axis', 'z_axis') %>%
       rollapply(
         data = .,
         width = window_size,
@@ -279,7 +280,7 @@ GenerateFeatures <-
       as.data.frame() %>%
       setNames("cor_yz")
 
-    new_features %<>% bind_cols(cor_xy_feature, cor_xz_feature, cor_yz_feature)
+    new_features %<>% dplyr::bind_cols(cor_xy_feature, cor_xz_feature, cor_yz_feature)
     pb$tick()
     pb$message("Correlation features are created")
 
@@ -289,7 +290,7 @@ GenerateFeatures <-
 
     # 9----------------- Autocorrelation --------------
     acf_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -303,11 +304,11 @@ GenerateFeatures <-
           )[["acf"]][2]
       ) %>%
       as.data.frame() %>%
-      rename("acf_x" = x_axis,
-             "acf_y" = y_axis,
-             "acf_z" = z_axis)
+      rename("acf_x" = 'x_axis',
+             "acf_y" = 'y_axis',
+             "acf_z" = 'z_axis')
 
-    new_features %<>% bind_cols(acf_features)
+    new_features %<>% dplyr::bind_cols(acf_features)
     pb$tick()
     pb$message("Autocorrelation features are created")
 
@@ -316,7 +317,7 @@ GenerateFeatures <-
     # 10----------------- Skewness --------------
     # measure of asymmetry of the singal probabilty distribution
     skw_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -325,18 +326,18 @@ GenerateFeatures <-
           e1071::skewness(x, na.rm = T)
       ) %>%
       as.data.frame() %>%
-      rename("skw_x" = x_axis,
-             "skw_y" = y_axis,
-             "skw_z" = z_axis)
+      rename("skw_x" = 'x_axis',
+             "skw_y" = 'y_axis',
+             "skw_z" = 'z_axis')
 
-    new_features %<>% bind_cols(skw_features)
+    new_features %<>% dplyr::bind_cols(skw_features)
     pb$tick()
     pb$message("Skewness features are created")
 
     # 11----------------- Kurtosis -----------------
     # degree of the peakedness of the signal probability distribution
     krt_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -345,11 +346,11 @@ GenerateFeatures <-
           e1071::kurtosis(x, na.rm = T)
       ) %>%
       as.data.frame() %>%
-      rename("krt_x" = x_axis,
-             "krt_y" = y_axis,
-             "krt_z" = z_axis)
+      rename("krt_x" = 'x_axis',
+             "krt_y" = 'y_axis',
+             "krt_z" = 'z_axis')
 
-    new_features %<>% bind_cols(krt_features)
+    new_features %<>% dplyr::bind_cols(krt_features)
     pb$tick()
     pb$message("Kurtosis features are created")
 
@@ -359,7 +360,7 @@ GenerateFeatures <-
     # 12-------------------- Sum Log-energy ----------------
 
     sle_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -368,11 +369,11 @@ GenerateFeatures <-
           sum(log(x ^ 2 + 1))
       ) %>%
       as.data.frame() %>%
-      rename("sle_x" = x_axis,
-             "sle_y" = y_axis,
-             "sle_z" = z_axis)
+      rename("sle_x" = 'x_axis',
+             "sle_y" = 'y_axis',
+             "sle_z" = 'z_axis')
 
-    new_features %<>% bind_cols(sle_features)
+    new_features %<>% dplyr::bind_cols(sle_features)
     pb$tick()
     pb$message("Sum Log-energy features are created")
 
@@ -384,7 +385,7 @@ GenerateFeatures <-
     # round the data to three digits and see how many maximum values there are
 
     pin_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -398,11 +399,11 @@ GenerateFeatures <-
         }
       ) %>%
       as.data.frame() %>%
-      rename("pin_x" = x_axis,
-             "pin_y" = y_axis,
-             "pin_z" = z_axis)
+      rename("pin_x" = 'x_axis',
+             "pin_y" = 'y_axis',
+             "pin_z" = 'z_axis')
 
-    new_features %<>% bind_cols(pin_features)
+    new_features %<>% dplyr::bind_cols(pin_features)
     pb$tick()
     pb$message("Peak intensity features are created")
 
@@ -414,7 +415,7 @@ GenerateFeatures <-
     # multiple each x_centralized row with the next one and if the result is negative, it has crossed
 
     zcr_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -434,11 +435,11 @@ GenerateFeatures <-
         }
       ) %>%
       as.data.frame() %>%
-      rename("zcr_x" = x_axis,
-             "zcr_y" = y_axis,
-             "zcr_z" = z_axis)
+      rename("zcr_x" = 'x_axis',
+             "zcr_y" = 'y_axis',
+             "zcr_z" = 'z_axis')
 
-    new_features %<>% bind_cols(zcr_features)
+    new_features %<>% dplyr::bind_cols(zcr_features)
     pb$tick()
     pb$message("Zero Crossing features are created")
 
@@ -446,7 +447,7 @@ GenerateFeatures <-
     # 15------------------ Dominant frequency--------------
 
     dfr_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -457,11 +458,11 @@ GenerateFeatures <-
         }
       ) %>%
       as.data.frame() %>%
-      rename("dfr_x" = x_axis,
-             "dfr_y" = y_axis,
-             "dfr_z" = z_axis)
+      rename("dfr_x" = 'x_axis',
+             "dfr_y" = 'y_axis',
+             "dfr_z" = 'z_axis')
 
-    new_features %<>% bind_cols(dfr_features)
+    new_features %<>% dplyr::bind_cols(dfr_features)
     pb$tick()
     pb$message("Dominant frequency features are created")
 
@@ -469,7 +470,7 @@ GenerateFeatures <-
     # 16------------------ Amplitude of dominant frequency--------------
 
     adf_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -481,11 +482,11 @@ GenerateFeatures <-
         }
       ) %>%
       as.data.frame() %>%
-      rename("adf_x" = x_axis,
-             "adf_y" = y_axis,
-             "adf_z" = z_axis)
+      rename("adf_x" = 'x_axis',
+             "adf_y" = 'y_axis',
+             "adf_z" = 'z_axis')
 
-    new_features %<>% bind_cols(adf_features)
+    new_features %<>% dplyr::bind_cols(adf_features)
     pb$tick()
     pb$message("Amplitude of dominant frequency- features are created")
 
@@ -498,7 +499,7 @@ GenerateFeatures <-
     # https://stackoverflow.com/questions/27254550/calculating-entropy
 
     ent_features <- raw_df %>%
-      select(x_axis, y_axis, z_axis) %>%
+      dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
         data = .,
         width = window_size,
@@ -512,11 +513,11 @@ GenerateFeatures <-
         }
       ) %>%
       as.data.frame() %>%
-      rename("ent_x" = x_axis,
-             "ent_y" = y_axis,
-             "ent_z" = z_axis)
+      rename("ent_x" = 'x_axis',
+             "ent_y" = 'y_axis',
+             "ent_z" = 'z_axis')
 
-    new_features %<>% bind_cols(ent_features)
+    new_features %<>% dplyr::bind_cols(ent_features)
     pb$tick()
     pb$message("Entropy features are created")
 
@@ -546,7 +547,7 @@ GenerateFeatures <-
     colnames(vec_mag_features) <- "vec_mag"
 
     # commented out due to multicollinearity with vec_mag
-    # Also line 559(new_features %<>% bind_cols(vec_mag_features, vec_mag_g_features, vec_mag_mean_feature)) is edited
+    # Also line 559(new_features %<>% dplyr::bind_cols(vec_mag_features, vec_mag_g_features, vec_mag_mean_feature)) is edited
     # # 2.
     # vec_mag_g_features <- vec_mag_features - 0.9808
     # colnames(vec_mag_g_features) <- "vec_mag-g"
@@ -558,11 +559,11 @@ GenerateFeatures <-
              2) %>%
       as.data.frame()
     colnames(vec_mag_mean_feature) <- "vec_mag_mean"
-    new_features %<>% bind_cols(vec_mag_features, vec_mag_mean_feature)
+    new_features %<>% dplyr::bind_cols(vec_mag_features, vec_mag_mean_feature)
 
 
     # 4.
-    new_features$ntile <- dplyer::ntile(new_features$vec_mag, 5)
+    new_features$ntile <- dplyr::ntile(new_features$vec_mag, 5)
 
 
 

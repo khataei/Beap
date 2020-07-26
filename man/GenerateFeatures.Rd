@@ -6,16 +6,16 @@
 \usage{
 GenerateFeatures(
   raw_df,
-  x_axis_column = 1,
-  y_axis_column = 2,
-  z_axis_column = 3,
+  x_axis_column = 2,
+  y_axis_column = 3,
+  z_axis_column = 4,
   window_size_sec = 1,
   overlap_sec = 0,
   frequency = 30
 )
 }
 \arguments{
-\item{raw_df}{a dataframe which has at least three columns, x_axis, y_axis, z_axis}
+\item{raw_df}{a dataframe which has at least three columns, 'x_axis', 'y_axis', 'z_axis'}
 
 \item{x_axis_column}{column number of x axis or}
 
@@ -25,7 +25,7 @@ GenerateFeatures(
 
 \item{window_size_sec}{windows size in second}
 
-\item{overlap_sec}{}
+\item{overlap_sec}{overlap of periods in seconds}
 
 \item{frequency}{sampling frequency}
 }
