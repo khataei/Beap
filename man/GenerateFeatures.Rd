@@ -6,6 +6,7 @@
 \usage{
 GenerateFeatures(
   raw_df,
+  time_column = 1,
   x_axis_column = 2,
   y_axis_column = 3,
   z_axis_column = 4,
@@ -15,13 +16,15 @@ GenerateFeatures(
 )
 }
 \arguments{
-\item{raw_df}{a dataframe which has at least three columns, 'x_axis', 'y_axis', 'z_axis'}
+\item{raw_df}{a dataframe which has at least four columns, 'time', 'x_axis', 'y_axis', 'z_axis'}
 
-\item{x_axis_column}{column number of x axis or}
+\item{time_column}{column number of time}
 
-\item{y_axis_column}{column number of y axis or}
+\item{x_axis_column}{column number of x axis}
 
-\item{z_axis_column}{column number of z axis or}
+\item{y_axis_column}{column number of y axis}
+
+\item{z_axis_column}{column number of z axis}
 
 \item{window_size_sec}{windows size in second}
 

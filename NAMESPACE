@@ -2,6 +2,7 @@
 
 export(GenerateFeatures)
 import(activityCounts)
+import(dplyr)
 import(e1071)
 import(lubridate)
 import(magrittr)

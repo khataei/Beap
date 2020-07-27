@@ -1,11 +1,12 @@
 #' Generate new features from raw data for a given time window
 #'
-#' @param raw_df a dataframe which has at least three columns, 'x_axis', 'y_axis', 'z_axis'
+#' @param raw_df a dataframe which has at least four columns, 'time', 'x_axis', 'y_axis', 'z_axis'
 #' @param window_size_sec windows size in second
 #' @param frequency sampling frequency
-#' @param x_axis_column column number of x axis or
-#' @param y_axis_column column number of y axis or
-#' @param z_axis_column column number of z axis or
+#' @param time_column column number of time
+#' @param x_axis_column column number of x axis
+#' @param y_axis_column column number of y axis
+#' @param z_axis_column column number of z axis
 #' @param overlap_sec overlap of periods in seconds
 #'
 #' @return new_features a dataset containing generated features
@@ -42,6 +43,7 @@
 #'
 GenerateFeatures <-
   function(raw_df,
+           time_column = 1,
            x_axis_column = 2,
            y_axis_column = 3,
            z_axis_column = 4,
@@ -80,8 +82,8 @@ GenerateFeatures <-
     pb$tick(0)
 
     # The following functions work on the 'x_axis', 'y_axis', 'z_axis' columns
-    raw_df  %<>% dplyr::select(c(x_axis_column, y_axis_column, z_axis_column))
-    colnames(raw_df) <- c("x_axis", "y_axis", "z_axis")
+    raw_df  %<>% dplyr::select(c(time_column, x_axis_column, y_axis_column, z_axis_column))
+    colnames(raw_df) <- c("time", "x_axis", "y_axis", "z_axis")
     message(
       paste0(
         "Features will be generate for ",
@@ -93,6 +95,25 @@ GenerateFeatures <-
         " columns"
       )
     )
+
+
+    # 0----------------- First ----------------- #
+    # From each period that the features are calculated for
+    # Select the first row of raw data
+    base_df <- raw_df %>%
+      dplyr::select('time', 'x_axis', 'y_axis', 'z_axis') %>%
+      zoo::rollapply(
+        data = .,
+        width = window_size,
+        by = distance,
+        FUN = dplyr::first
+      ) %>%
+      as.data.frame()
+
+    new_features %<>% dplyr::bind_cols(base_df)
+    pb$tick()
+    pb$message("First 'time','x_axis', 'y_axis' and
+               'z_axis'features are selected")
 
 
 
