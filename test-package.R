@@ -1,4 +1,9 @@
 library(activityCounts)
+library(tidyverse)
+library(data.table)
+library(caret)
+library(ranger)
+
 raw_df <- activityCounts::sampleXYZ
 sampling_freq <- 100
 # prepare the dataset by setting proper column names
@@ -11,10 +16,6 @@ window_size_sec <- 1
 test_df <- Beap::GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
 
 
-library(tidyverse)
-library(data.table)
-library(caret)
-library(ranger)
 
 # Load the model and
 model_path <- "https://storage.googleapis.com/khataei.site/Model.RData"
@@ -28,3 +29,19 @@ predicted_df <- stats::predict(forests, test_df_tr, importance = TRUE)
 predicted_df <- predicted_df[["predictions"]] %>% data.frame()
 
 sum(is.na(test_df_tr$cor_xy))
+#-------------------------------#
+
+
+
+# Read my data July 27th
+raw_df <- fread("accel__1.csv")
+raw_df <- raw_df %>% select(-4)
+sampling_freq <- 50
+window_size_sec <- 1
+raw_df$time <- 0
+raw_df <- raw_df %>%  select(4,1,2,3)
+test_df <- Beap::GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
+test_df_tr <- test_df  %>% imputeTS::na_interpolation(option =  "linear")
+predicted_df <- stats::predict(forests, test_df_tr, importance = TRUE)
+predicted_df <- predicted_df[["predictions"]] %>% data.frame()
+
