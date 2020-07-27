@@ -63,9 +63,9 @@ GenerateFeatures <-
     distance <- window_size - overlap
 
 
-    message(paste0("The window size is set to: ",window_size, " observations"))
+    message(paste0("The window size is set to: ", window_size, " observations"))
 
-    message(paste0("overlap size is set to ", overlap," observations"))
+    message(paste0("overlap size is set to ", overlap, " observations"))
 
     # create empty dataframe to store all the new features
     new_features <- NULL
@@ -102,30 +102,21 @@ GenerateFeatures <-
     # Select the first row of raw data
     base_df <- raw_df %>%
       dplyr::select('time', 'x_axis', 'y_axis', 'z_axis') %>%
-      zoo::rollapply(
-        data = .,
-        width = window_size,
-        by = distance,
-        FUN = dplyr::first
-      ) %>%
+      zoo::rollapply(width = window_size,
+                     by = distance,
+                     FUN = dplyr::first) %>%
       as.data.frame()
 
     new_features %<>% dplyr::bind_cols(base_df)
-    pb$tick()
-    pb$message("First 'time','x_axis', 'y_axis' and
-               'z_axis'features are selected")
 
 
 
     # 1----------------- Sum ----------------- #
     sum_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
-      zoo::rollapply(
-        data = .,
-        width = window_size,
-        by = distance,
-        FUN = sum
-      ) %>%
+      zoo::rollapply(width = window_size,
+                     by = distance,
+                     FUN = sum) %>%
       as.data.frame() %>%
       rename("sum_x" = 'x_axis',
              "sum_y" = 'y_axis',
@@ -142,7 +133,6 @@ GenerateFeatures <-
     snp_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -162,12 +152,9 @@ GenerateFeatures <-
     # 3----------------- Mean -----------------
     mean_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
-      zoo::rollapply(
-        data = .,
-        width = window_size,
-        by = distance,
-        FUN = mean
-      ) %>%
+      zoo::rollapply(width = window_size,
+                     by = distance,
+                     FUN = mean) %>%
       as.data.frame() %>%
       rename("mean_x" = 'x_axis',
              "mean_y" = 'y_axis',
@@ -182,12 +169,9 @@ GenerateFeatures <-
     # 4--------------- Standard deviation-------------
     sd_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
-      zoo::rollapply(
-        data = .,
-        width = window_size,
-        by = distance,
-        FUN = sd
-      ) %>%
+      zoo::rollapply(width = window_size,
+                     by = distance,
+                     FUN = sd) %>%
       as.data.frame() %>%
       rename("sd_x" = 'x_axis',
              "sd_y" = 'y_axis',
@@ -219,7 +203,6 @@ GenerateFeatures <-
     amp_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(a)
@@ -240,7 +223,6 @@ GenerateFeatures <-
     iqr_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN =  function(a)
@@ -263,7 +245,6 @@ GenerateFeatures <-
     cor_xy_feature <- raw_df %>%
       dplyr::select('x_axis', 'y_axis') %>%
       rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -277,7 +258,6 @@ GenerateFeatures <-
     cor_xz_feature <- raw_df %>%
       dplyr::select('x_axis', 'z_axis') %>%
       rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -291,7 +271,6 @@ GenerateFeatures <-
     cor_yz_feature <- raw_df %>%
       dplyr::select('y_axis', 'z_axis') %>%
       rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -313,7 +292,6 @@ GenerateFeatures <-
     acf_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -340,7 +318,6 @@ GenerateFeatures <-
     skw_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -360,7 +337,6 @@ GenerateFeatures <-
     krt_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -383,7 +359,6 @@ GenerateFeatures <-
     sle_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x)
@@ -408,7 +383,6 @@ GenerateFeatures <-
     pin_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x) {
@@ -438,7 +412,6 @@ GenerateFeatures <-
     zcr_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x) {
@@ -470,7 +443,6 @@ GenerateFeatures <-
     dfr_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x) {
@@ -493,7 +465,6 @@ GenerateFeatures <-
     adf_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x) {
@@ -522,7 +493,6 @@ GenerateFeatures <-
     ent_features <- raw_df %>%
       dplyr::select('x_axis', 'y_axis', 'z_axis') %>%
       zoo::rollapply(
-        data = .,
         width = window_size,
         by = distance,
         FUN = function(x) {
@@ -558,12 +528,9 @@ GenerateFeatures <-
       as.data.frame()
 
     vec_mag_features <- vec_mag %>%
-      zoo::rollapply(
-        data = .,
-        width = window_size,
-        by = distance,
-        FUN = mean
-      ) %>%
+      zoo::rollapply(width = window_size,
+                     by = distance,
+                     FUN = mean) %>%
       as.data.frame()
     colnames(vec_mag_features) <- "vec_mag"
 
