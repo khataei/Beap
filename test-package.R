@@ -36,10 +36,12 @@ sum(is.na(test_df_tr$cor_xy))
 # Read my data July 27th
 raw_df <- fread("accel__1.csv")
 raw_df <- raw_df %>% select(-4)
+raw_df <- raw_df %>%  mutate_all(function(a){a/9.80637})
 sampling_freq <- 50
 window_size_sec <- 1
 raw_df$time <- 0
 raw_df <- raw_df %>%  select(4,1,2,3)
+
 test_df <- Beap::GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
 test_df_tr <- test_df  %>% imputeTS::na_interpolation(option =  "linear")
 predicted_df <- stats::predict(forests, test_df_tr, importance = TRUE)
