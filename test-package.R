@@ -44,6 +44,6 @@ raw_df <- raw_df %>%  select(4,1,2,3)
 
 test_df <- Beap::GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
 test_df_tr <- test_df  %>% imputeTS::na_interpolation(option =  "linear")
-predicted_df <- stats::predict(forests, test_df_tr, importance = TRUE)
+predicted_df <- stats::predict(forests, test_df_tr)
 predicted_df <- predicted_df[["predictions"]] %>% data.frame()
-
+View(predicted_df)
