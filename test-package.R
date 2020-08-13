@@ -1,49 +1,71 @@
+# """
+# For testing the package
+#
+# Javad Khataei
+# j.khataee@gmail.com
+# """
+
+
 library(activityCounts)
 library(tidyverse)
 library(data.table)
 library(caret)
 library(ranger)
 
-raw_df <- activityCounts::sampleXYZ
-sampling_freq <- 100
-# prepare the dataset by setting proper column names
-raw_df <- sampleXYZ %>%
-    rename("x_axis" = 'accelerometer_X', "y_axis" = 'accelerometer_Y',
-           "z_axis" = 'accelerometer_Z')
-# consider a one second window
-window_size_sec <- 1
-# generate new features
-test_df <- Beap::GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
 
-
-
-# Load the model and
+# Load the model
 model_path <- "https://storage.googleapis.com/khataei.site/Model.RData"
 temp <- tempfile(fileext = ".RData")
 download.file(model_path, temp)
 load(temp)
 
-test_df_tr <- test_df %>% select(-time)
+
+
+# Read sample data produced by "Accelerometer Analyzer" app
+raw_df <- fread("sample-accel-data.csv")
+sampling_freq <- 50 # This was set in the app
+window_size_sec <- 1 # The model was train with this
+
+# Create features
+test_df <- Beap::GenerateFeatures(raw_df = raw_df,
+                                  window_size_sec = window_size_sec,
+                                  frequency = sampling_freq)
+
+# Impute null values as the model cannot work if there's any null value
 test_df_tr <- test_df  %>% imputeTS::na_interpolation(option =  "linear")
-predicted_df <- stats::predict(forests, test_df_tr, importance = TRUE)
-predicted_df <- predicted_df[["predictions"]] %>% data.frame()
-
-sum(is.na(test_df_tr$cor_xy))
-#-------------------------------#
 
 
-
-# Read my data July 27th
-raw_df <- fread("accel__1.csv")
-raw_df <- raw_df %>% select(-4)
-raw_df <- raw_df %>%  mutate_all(function(a){a/9.80637})
-sampling_freq <- 50
-window_size_sec <- 1
-raw_df$time <- 0
-raw_df <- raw_df %>%  select(4,1,2,3)
-
-test_df <- Beap::GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
-test_df_tr <- test_df  %>% imputeTS::na_interpolation(option =  "linear")
 predicted_df <- stats::predict(forests, test_df_tr)
 predicted_df <- predicted_df[["predictions"]] %>% data.frame()
+
+
+
+# Optional: Create time column for the results
+start_time <- raw_df[1,1] %>% as.character() %>% lubridate::as_datetime()
+time_df <- seq(from=start_time,by=
+                   lubridate::period(num = window_size_sec,units = "second"),
+               length.out = nrow(predicted_df)) %>%  as_tibble()
+
+# Optional: Bind time to the results
+predicted_df <- bind_cols(time_df, predicted_df)
 View(predicted_df)
+
+# ================================================#
+# An example for function header
+
+# Create a dummy dataset
+sampling_freq <- 100
+window_size_sec <- 1 # The model was train with this
+number_of_rows <- 6000 # 60 seconds with a frequency of 100 Hz
+raw_df <- seq(from= lubridate::now(),by=
+                  lubridate::period(num = 1/ sampling_freq,units = "second"),
+              length.out = number_of_rows) %>%  as_tibble()
+x_axis_df <- runif(n=number_of_rows, min=1e-12, max=.9999999999) %>%  as_data_frame()
+y_axis_df <- runif(n=number_of_rows, min=1e-12, max=.9999999999) %>%  as_data_frame()
+z_axis_df <- runif(n=number_of_rows, min=1e-12, max=.9999999999) %>%  as_data_frame()
+raw_df <- bind_cols(raw_df,x_axis_df, y_axis_df, z_axis_df)
+
+# Generate features
+test_df <- Beap::GenerateFeatures(raw_df = raw_df,
+                                  window_size_sec = window_size_sec,
+                                  frequency = sampling_freq)
