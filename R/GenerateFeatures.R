@@ -1,4 +1,4 @@
-#' Generate new features from raw data for a given time window
+#' Generate new features from raw accelerometer data for a given time window
 #'
 #' @param raw_df a dataframe which has at least four columns, 'time', 'x_axis', 'y_axis', 'z_axis'
 #' @param window_size_sec windows size in second
@@ -25,20 +25,22 @@
 #' @examples
 #'
 #' \dontrun{
-#' # load a sample dataset
-#' library(activityCounts)
-#' load("sampleXYZ")
+#' # Create a dummy dataset
 #' sampling_freq <- 100
+#' window_size_sec <- 1 # The model was train with this
+#' number_of_rows <- 6000 # 60 seconds with a frequency of 100 Hz
+#' raw_df <- seq(from= lubridate::now(),by=
+#'                 lubridate::period(num = 1/sampling_freq,units = "second"),
+#'               length.out = number_of_rows) %>%  as_tibble()
+#' x_axis_df <- runif(n=number_of_rows, min=1e-12, max=.9999999999) %>%  as_data_frame()
+#' y_axis_df <- runif(n=number_of_rows, min=1e-12, max=.9999999999) %>%  as_data_frame()
+#' z_axis_df <- runif(n=number_of_rows, min=1e-12, max=.9999999999) %>%  as_data_frame()
+#' raw_df <- bind_cols(raw_df,x_axis_df, y_axis_df, z_axis_df)
 #'
-#' # prepare the dataset by setting proper column names
-#' raw_df <- sampleXYZ %>% rename("x_axis" = accelerometer_X,
-#'  "y_axis" = accelerometer_Y, "z_axis" = accelerometer_Z)
-#'
-#' # consider a one second window
-#' window_size_sec <- 1
-#'
-#' # generate new features
-#' GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
+#' # Generate features
+#' test_df <- Beap::GenerateFeatures(raw_df = raw_df,
+#'                                   window_size_sec = window_size_sec,
+#'                                   GenerateFeatures(raw_df = raw_df, window_size_sec = window_size_sec, frequency = sampling_freq)
 #' }
 #'
 GenerateFeatures <-
@@ -86,13 +88,13 @@ GenerateFeatures <-
     colnames(raw_df) <- c("time", "x_axis", "y_axis", "z_axis")
     message(
       paste0(
-        "Features will be generate for ",
+        "Features will be generate based on columns ",
         x_axis_column,
         ", ",
         y_axis_column,
         ", ",
         z_axis_column,
-        " columns"
+        " as x, y and z axes."
       )
     )
 
